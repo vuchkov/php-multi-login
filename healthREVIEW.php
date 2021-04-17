@@ -19,18 +19,33 @@ function getUserHealthById($user)
 
 $healthInfo = getUserHealthById($user);
 
-// If we have $_REQUEST (submitted form) data.
-if (isset($_POST['user_id'], $_POST['weight']))
+// If we have $_POST (submitted form) data.
+if (isset($_POST['user_id'], $_POST['heartrate'], $_POST['bloodo2'], $_POST['boodpressure'], $_POST['weight']))
 {
     $user_id = mysqli_real_escape_string($db, $_POST['user_id']);;
+    $heartrate = mysqli_real_escape_string($db, $_POST['heartrate']);
+    $bloodo2 = mysqli_real_escape_string($db, $_POST['bloodo2']);
+    $boodpressure = mysqli_real_escape_string($db, $_POST['boodpressure']);
     $weight = mysqli_real_escape_string($db, $_POST['weight']);
 
-    // Attempt insert query execution
-    $sql = "INSERT INTO healt_data (weight, user_id) VALUES ('$weight', '$user_id')";
-    if(mysqli_query($db, $sql)){
-        echo "Records added successfully.";
-    } else{
-        echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
+    // Check IF we have data of the user then UPDATE, else INSERT.
+    $exist_user_data = mysqli_fetch_row(mysqli_query($db, 'Select COUNT(*) from healt_data WHERE user_id="'. $user_id . '"')) > 0;
+    if ($exist_user_data) {
+        $sql = "UPDATE healt_data SET heartrate='$heartrate', bloodo2='$bloodo2', boodpressure='$boodpressure', weight='$weight' WHERE user_id='$user_id'";
+        if (mysqli_query($db, $sql)) {
+            echo "Records added successfully.";
+        } else {
+            echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
+        }
+    }  else  {
+        // Attempt insert query execution
+        $sql = "INSERT INTO healt_data (user_id, heartrate, bloodo2, boodpressure, weight) 
+            VALUES ('$user_id', '$heartrate', '$bloodo2', '$boodpressure', '$weight')";
+        if (mysqli_query($db, $sql)) {
+            echo "Records added successfully.";
+        } else {
+            echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
+        }
     }
 }
  
