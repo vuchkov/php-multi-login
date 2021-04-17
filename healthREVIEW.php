@@ -1,48 +1,42 @@
-<?php 
-session_start();
-
-// connect to database
-$db = mysqli_connect('localhost', 'root', '', 'multi_login');
-
-// variable declaration
-$firstname = "";
-$lastname = "";
-$username = "";
-$email    = "";
+<?php
+global $db;
+include('functions.php');
+if (!isLoggedIn()) {
+    $_SESSION['msg'] = "You must log in first";
+    header('location: login.php');
+}
 $user = $_SESSION['user'];
 
+// If we have $_POST (submitted form) data.
+if (isset($_POST['user_id'], $_POST['heartrate'], $_POST['bloodo2'], $_POST['boodpressure'], $_POST['weight']))
+{
+    $user_id = e($_POST['user_id']);;
+    $heartrate = e($_POST['heartrate']);
+    $bloodo2 = e($_POST['bloodo2']);
+    $boodpressure = e($_POST['boodpressure']);
+    $weight = e($_POST['weight']);
 
-
-function getUserHealthById($user){
-        
-	global $db;
-	$query = "SELECT * FROM healt_data WHERE user_id=" . $user['id'];
-	$result = mysqli_query($db, $query);
-
-	$healthInfo = mysqli_fetch_assoc($result);
-	return $healthInfo;
-} 
+    // Check IF we have data of the user then UPDATE, else INSERT.
+    if (existUserData($user_id)) {
+        $sql = "UPDATE healt_data SET heartrate='$heartrate', bloodo2='$bloodo2', boodpressure='$boodpressure', weight='$weight' WHERE user_id='$user_id'";
+        if (mysqli_query($db, $sql)) {
+            echo "Records added successfully.";
+        } else {
+            echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
+        }
+    }  else  {
+        // Attempt insert query execution
+        $sql = "INSERT INTO healt_data (user_id, heartrate, bloodo2, boodpressure, weight) 
+            VALUES ('$user_id', '$heartrate', '$bloodo2', '$boodpressure', '$weight')";
+        if (mysqli_query($db, $sql)) {
+            echo "Records added successfully.";
+        } else {
+            echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
+        }
+    }
+}
 
 $healthInfo = getUserHealthById($user);
-
-$sql = "INSERT INTO healt_data (weight)
-VALUES ('33')";
-
-$user_id = mysqli_real_escape_string($db, $_REQUEST['user_id']);;
-$weight = mysqli_real_escape_string($db, $_REQUEST['weight']);
-
-
-// Attempt insert query execution
-$sql = "INSERT INTO healt_data (weight, user_id) VALUES ('$weight', '$user_id')";
-if(mysqli_query($db, $sql)){
-    echo "Records added successfully.";
-} else{
-    echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
-}
- 
-// Close connection
-mysqli_close($db);
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -56,46 +50,35 @@ mysqli_close($db);
 	</div>
 	<div class="content">
 	<table>
-	<tr>
-		<td>Name:</td>
-		<td><?PHP echo $user['firstname'].' '. $user['lastname']?></td>
-	</tr>
-	<tr>
-		<td>Heartrate:</td>
-		<td><?PHP echo $healthInfo['heartrate']?> b/s</td>
-	</tr>
         <tr>
-		<td>Blood Oxigen:</td>
-		<td><?PHP echo $healthInfo['bloodo2']?> %</td>
-	</tr>
+            <td>Name:</td>
+            <td><?= $user['firstname'] . ' ' . $user['lastname'] ?></td>
+        </tr>
         <tr>
-		<td>Blood Pressure:</td>
-		<td><?PHP echo $healthInfo['boodpressure']?></td>
-	</tr>
+            <td>Heartrate:</td>
+            <td><?= $healthInfo['heartrate'] ?? '0' ?> b/s</td>
+        </tr>
         <tr>
-		<td>Weight:</td>
-		<td><?PHP echo $healthInfo['weight']?> kg</td>
-	</tr>
+            <td>Blood Oxigen:</td>
+            <td><?= $healthInfo['bloodo2'] ?? '0' ?> %</td>
+        </tr>
         <tr>
-		<td>id:</td>
-		<td><?PHP echo $healthInfo['user_id']?> ID</td>
-	</tr>
-</table>
-	</div>
-
-        <form action="insert.php" method="post">
+            <td>Blood Pressure:</td>
+            <td><?= $healthInfo['boodpressure'] ?? '0' ?></td>
+        </tr>
+        <tr>
+            <td>Weight:</td>
+            <td><?= $healthInfo['weight'] ?? '0' ?> kg</td>
+        </tr>
+        <tr>
+            <td>id:</td>
+            <td><?= $healthInfo['user_id'] ?? '0' ?> ID</td>
+        </tr>
+    </table>
     <p>
-        <label for="user_id">weight:</label>
-        <input type="text" name="user_id" id="user_id">
+        <a href="healthADD.php">Add health data</a>
     </p>
-    <p>
-        <label for="weight">weight:</label>
-        <input type="text" name="weight" id="weight">
-    </p>
-    
-    <input type="submit" value="Submit">
-</form>
-
+</div>
 
 </body>
 </html>
