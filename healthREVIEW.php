@@ -1,20 +1,16 @@
-<?php 
-session_start();
+<?php
 
-// connect to database
-$db = mysqli_connect('localhost', 'root', '', 'multi_login');
+global $db;
+include('functions.php');
+if (!isLoggedIn()) {
+    $_SESSION['msg'] = "You must log in first";
+    header('location: login.php');
+}
 
-// variable declaration
-$firstname = "";
-$lastname = "";
-$username = "";
-$email    = "";
 $user = $_SESSION['user'];
 
-
-
-function getUserHealthById($user){
-        
+function getUserHealthById($user)
+{
 	global $db;
 	$query = "SELECT * FROM healt_data WHERE user_id=" . $user['id'];
 	$result = mysqli_query($db, $query);
@@ -25,19 +21,19 @@ function getUserHealthById($user){
 
 $healthInfo = getUserHealthById($user);
 
-$sql = "INSERT INTO healt_data (weight)
-VALUES ('33')";
+// If we have $_REQUEST (submitted form) data.
+if (isset($_POST['user_id'], $_POST['weight']))
+{
+    $user_id = mysqli_real_escape_string($db, $_POST['user_id']);;
+    $weight = mysqli_real_escape_string($db, $_POST['weight']);
 
-$user_id = mysqli_real_escape_string($db, $_REQUEST['user_id']);;
-$weight = mysqli_real_escape_string($db, $_REQUEST['weight']);
-
-
-// Attempt insert query execution
-$sql = "INSERT INTO healt_data (weight, user_id) VALUES ('$weight', '$user_id')";
-if(mysqli_query($db, $sql)){
-    echo "Records added successfully.";
-} else{
-    echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
+    // Attempt insert query execution
+    $sql = "INSERT INTO healt_data (weight, user_id) VALUES ('$weight', '$user_id')";
+    if(mysqli_query($db, $sql)){
+        echo "Records added successfully.";
+    } else{
+        echo "ERROR: Could not able to execute $sql. " . mysqli_error($db);
+    }
 }
  
 // Close connection
@@ -58,43 +54,32 @@ mysqli_close($db);
 	<table>
 	<tr>
 		<td>Name:</td>
-		<td><?PHP echo $user['firstname'].' '. $user['lastname']?></td>
+		<td><?= $user['firstname'] . ' ' . $user['lastname'] ?></td>
 	</tr>
 	<tr>
 		<td>Heartrate:</td>
-		<td><?PHP echo $healthInfo['heartrate']?> b/s</td>
+		<td><?= $healthInfo['heartrate'] ?? '0' ?> b/s</td>
 	</tr>
         <tr>
 		<td>Blood Oxigen:</td>
-		<td><?PHP echo $healthInfo['bloodo2']?> %</td>
+		<td><?= $healthInfo['bloodo2'] ?? '0' ?> %</td>
 	</tr>
         <tr>
 		<td>Blood Pressure:</td>
-		<td><?PHP echo $healthInfo['boodpressure']?></td>
+		<td><?= $healthInfo['boodpressure'] ?? '0' ?></td>
 	</tr>
         <tr>
 		<td>Weight:</td>
-		<td><?PHP echo $healthInfo['weight']?> kg</td>
+		<td><?= $healthInfo['weight'] ?? '0' ?> kg</td>
 	</tr>
         <tr>
 		<td>id:</td>
-		<td><?PHP echo $healthInfo['user_id']?> ID</td>
+		<td><?= $healthInfo['user_id'] ?? '0' ?> ID</td>
 	</tr>
 </table>
 	</div>
 
-        <form action="insert.php" method="post">
-    <p>
-        <label for="user_id">weight:</label>
-        <input type="text" name="user_id" id="user_id">
-    </p>
-    <p>
-        <label for="weight">weight:</label>
-        <input type="text" name="weight" id="weight">
-    </p>
-    
-    <input type="submit" value="Submit">
-</form>
+
 
 
 </body>
