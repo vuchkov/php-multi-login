@@ -169,10 +169,14 @@ function isAdmin()
 	return isset($_SESSION['user']) && ($_SESSION['user']['user_type'] == 'admin');
 }
 
+/**
+ * @param $user
+ * @return array|null
+ */
 function getUserHealthById($user)
 {
     global $db;
-    $query = "SELECT * FROM healt_data WHERE user_id=" . $user['id'];
+    $query = 'SELECT * FROM healt_data WHERE user_id="' . $user['id'] . '"';
     $result = mysqli_query($db, $query);
 
     $healthInfo = mysqli_fetch_assoc($result);

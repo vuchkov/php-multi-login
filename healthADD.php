@@ -9,7 +9,7 @@ $user = $_SESSION['user'];
 
 // Check IF the user has healt_data THEN load $data ELSE fill an empty array.
 if (existUserData($user['id'])) {
-    $data = mysqli_fetch_assoc(mysqli_query($db, 'SELECT * FROM healt_data WHERE user_id="' . $user['id'] . '" LIMIT 1'));
+    $data = getUserHealthById($user);
 } else {
     $data = [
         'heartrate' => '0',
