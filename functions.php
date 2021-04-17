@@ -168,3 +168,23 @@ function isAdmin()
 {
 	return isset($_SESSION['user']) && ($_SESSION['user']['user_type'] == 'admin');
 }
+
+function getUserHealthById($user)
+{
+    global $db;
+    $query = "SELECT * FROM healt_data WHERE user_id=" . $user['id'];
+    $result = mysqli_query($db, $query);
+
+    $healthInfo = mysqli_fetch_assoc($result);
+    return $healthInfo;
+}
+
+/**
+ * @param string $user_id
+ * @return bool
+ */
+function existUserData($user_id)
+{
+    global $db;
+    return mysqli_fetch_row(mysqli_query($db, 'Select COUNT(*) from healt_data WHERE user_id="'. $user_id . '"')) > 0;
+}

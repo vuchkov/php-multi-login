@@ -8,8 +8,7 @@ if (!isLoggedIn()) {
 $user = $_SESSION['user'];
 
 // Check IF the user has healt_data THEN load $data ELSE fill an empty array.
-$exist_user_data = mysqli_fetch_row(mysqli_query($db, 'Select COUNT(*) from healt_data WHERE user_id="'. $user['id'] . '"')) > 0;
-if ($exist_user_data) {
+if (existUserData($user['id'])) {
     $data = mysqli_fetch_assoc(mysqli_query($db, 'SELECT * FROM healt_data WHERE user_id="' . $user['id'] . '" LIMIT 1'));
 } else {
     $data = [

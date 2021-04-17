@@ -7,30 +7,17 @@ if (!isLoggedIn()) {
 }
 $user = $_SESSION['user'];
 
-function getUserHealthById($user)
-{
-	global $db;
-	$query = "SELECT * FROM healt_data WHERE user_id=" . $user['id'];
-	$result = mysqli_query($db, $query);
-
-	$healthInfo = mysqli_fetch_assoc($result);
-	return $healthInfo;
-} 
-
-$healthInfo = getUserHealthById($user);
-
 // If we have $_POST (submitted form) data.
 if (isset($_POST['user_id'], $_POST['heartrate'], $_POST['bloodo2'], $_POST['boodpressure'], $_POST['weight']))
 {
-    $user_id = mysqli_real_escape_string($db, $_POST['user_id']);;
-    $heartrate = mysqli_real_escape_string($db, $_POST['heartrate']);
-    $bloodo2 = mysqli_real_escape_string($db, $_POST['bloodo2']);
-    $boodpressure = mysqli_real_escape_string($db, $_POST['boodpressure']);
-    $weight = mysqli_real_escape_string($db, $_POST['weight']);
+    $user_id = e($_POST['user_id']);;
+    $heartrate = e($_POST['heartrate']);
+    $bloodo2 = e($_POST['bloodo2']);
+    $boodpressure = e($_POST['boodpressure']);
+    $weight = e($_POST['weight']);
 
     // Check IF we have data of the user then UPDATE, else INSERT.
-    $exist_user_data = mysqli_fetch_row(mysqli_query($db, 'Select COUNT(*) from healt_data WHERE user_id="'. $user_id . '"')) > 0;
-    if ($exist_user_data) {
+    if (existUserData($user_id)) {
         $sql = "UPDATE healt_data SET heartrate='$heartrate', bloodo2='$bloodo2', boodpressure='$boodpressure', weight='$weight' WHERE user_id='$user_id'";
         if (mysqli_query($db, $sql)) {
             echo "Records added successfully.";
@@ -48,10 +35,8 @@ if (isset($_POST['user_id'], $_POST['heartrate'], $_POST['bloodo2'], $_POST['boo
         }
     }
 }
- 
-// Close connection
-mysqli_close($db);
 
+$healthInfo = getUserHealthById($user);
 ?>
 <!DOCTYPE html>
 <html>
@@ -94,8 +79,6 @@ mysqli_close($db);
         <a href="healthADD.php">Add health data</a>
     </p>
 </div>
-
-
 
 </body>
 </html>
