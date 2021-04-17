@@ -1,12 +1,10 @@
 <?php
-
 global $db;
 include('functions.php');
 if (!isLoggedIn()) {
     $_SESSION['msg'] = "You must log in first";
     header('location: login.php');
 }
-
 $user = $_SESSION['user'];
 
 function getUserHealthById($user)
@@ -52,33 +50,35 @@ mysqli_close($db);
 	</div>
 	<div class="content">
 	<table>
-	<tr>
-		<td>Name:</td>
-		<td><?= $user['firstname'] . ' ' . $user['lastname'] ?></td>
-	</tr>
-	<tr>
-		<td>Heartrate:</td>
-		<td><?= $healthInfo['heartrate'] ?? '0' ?> b/s</td>
-	</tr>
         <tr>
-		<td>Blood Oxigen:</td>
-		<td><?= $healthInfo['bloodo2'] ?? '0' ?> %</td>
-	</tr>
+            <td>Name:</td>
+            <td><?= $user['firstname'] . ' ' . $user['lastname'] ?></td>
+        </tr>
         <tr>
-		<td>Blood Pressure:</td>
-		<td><?= $healthInfo['boodpressure'] ?? '0' ?></td>
-	</tr>
+            <td>Heartrate:</td>
+            <td><?= $healthInfo['heartrate'] ?? '0' ?> b/s</td>
+        </tr>
         <tr>
-		<td>Weight:</td>
-		<td><?= $healthInfo['weight'] ?? '0' ?> kg</td>
-	</tr>
+            <td>Blood Oxigen:</td>
+            <td><?= $healthInfo['bloodo2'] ?? '0' ?> %</td>
+        </tr>
         <tr>
-		<td>id:</td>
-		<td><?= $healthInfo['user_id'] ?? '0' ?> ID</td>
-	</tr>
-</table>
-	</div>
-
+            <td>Blood Pressure:</td>
+            <td><?= $healthInfo['boodpressure'] ?? '0' ?></td>
+        </tr>
+        <tr>
+            <td>Weight:</td>
+            <td><?= $healthInfo['weight'] ?? '0' ?> kg</td>
+        </tr>
+        <tr>
+            <td>id:</td>
+            <td><?= $healthInfo['user_id'] ?? '0' ?> ID</td>
+        </tr>
+    </table>
+    <p>
+        <a href="healthADD.php">Add health data</a>
+    </p>
+</div>
 
 
 
